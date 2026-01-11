@@ -1,12 +1,57 @@
 services:
   mariadb:
-    build:
-      context: ./requirements/mariadb
-    env_file:
-      - .env
+    build: ./requirements/mariadb/
     restart: always
     volumes:
-      - mariadb_data:/var/lib/mysql
+      - mariadb_vol:/var/lib/mysql
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      network_1:
+        ipv4_address: 192.168.91.3
+#  nginx:
+#    build: ./requirements/nginx/
+#    restart: always
+#    env_file:
+#      - .env
+  wordpress:
+    build: ./requirements/wordpress/
+    restart: always
+    volumes: 
+      - wordpress_vol:/var/lib/wordpress
+    env_file:
+      - .env
+    networks:
+      network_1:
+        ipv4_address: 192.168.91.2
+    depends_on:
+      mariadb:
+        condition: service_healthy
 volumes:
-  mariadb_data:
-    name: mariadb_data
+  mariadb_vol:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/malsharq/data/db
+      o: bind
+  wordpress_vol:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/malsharq/data/wp
+      o: bind    
+networks:
+  network_1:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "192.168.91.0/24"
+
+
+    

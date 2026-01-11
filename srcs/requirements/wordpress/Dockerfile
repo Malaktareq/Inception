@@ -1,0 +1,15 @@
+From debian:bookworm-slim
+
+RUN apt-get update  \
+    && apt-get install -y php-fpm php-mysql php-xml php-zip wget ca-certificates \
+    && wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY tools/wordpress.sh .
+RUN php wp-cli.phar --info
+RUN chmod +x wp-cli.phar
+RUN mv wp-cli.phar /usr/local/bin/wp
+RUN chmod +x wordpress.sh
+
+ENTRYPOINT ["bash", "./wordpress.sh"]
+CMD ["tail", "-f"]

@@ -1,6 +1,7 @@
 services:
   mariadb:
     build: ./requirements/mariadb/
+    container_name: mariadb
     restart: always
     volumes:
       - mariadb_vol:/var/lib/mysql
@@ -15,13 +16,9 @@ services:
     networks:
       network_1:
         ipv4_address: 192.168.91.3
-#  nginx:
-#    build: ./requirements/nginx/
-#    restart: always
-#    env_file:
-#      - .env
   wordpress:
     build: ./requirements/wordpress/
+    container_name: wordpress
     restart: always
     volumes: 
       - wordpress_vol:/var/lib/wordpress

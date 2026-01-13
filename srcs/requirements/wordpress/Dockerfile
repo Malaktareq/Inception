@@ -11,5 +11,4 @@ RUN chmod +x wp-cli.phar
 RUN mv wp-cli.phar /usr/local/bin/wp
 RUN chmod +x wordpress.sh
 
-#ENTRYPOINT ["bash", "./wordpress.sh"]
-CMD ["tail", "-f"]
+ENTRYPOINT ["./wordpress.sh"]

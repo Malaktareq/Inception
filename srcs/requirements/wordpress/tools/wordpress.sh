@@ -26,6 +26,7 @@ if ! wp --path="$WP_DIR" core is-installed --allow-root; then
     --skip-email \
     --allow-root
 fi
+sed -i "s|listen = /run/php/php8.2-fpm.sock|listen = 9000|" "/etc/php/8.2/fpm/pool.d/www.conf" 
 
 rm -rf /tmp/wordpress.tar.gz /tmp/wordpress
 

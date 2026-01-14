@@ -16,12 +16,13 @@ services:
     networks:
       network_1:
         ipv4_address: 192.168.91.3
+
   wordpress:
     build: ./requirements/wordpress/
     container_name: wordpress
     restart: always
     volumes: 
-      - wordpress_vol:/var/lib/wordpress
+      - wordpress_vol:/var/www/html
     env_file:
       - .env
     networks:
@@ -30,6 +31,28 @@ services:
     depends_on:
       mariadb:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 9000 || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  nginx:
+    build: ./requirements/nginx/
+    container_name: nginx
+    restart: always
+    volumes:
+      - wordpress_vol:/var/www/html
+    env_file:
+      - .env
+    depends_on: 
+      wordpress:
+        condition: service_healthy
+    ports: 
+      - "443:443"
+    networks:
+      network_1:
+         ipv4_address: 192.168.91.4
 volumes:
   mariadb_vol:
     driver: local

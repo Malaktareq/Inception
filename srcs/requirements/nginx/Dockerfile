@@ -1,10 +1,12 @@
 From debian:bookworm-slim
 
-RUN apt-get update \
-    && apt-get install nginx
+RUN apt update -y \
+    && apt install nginx -y
 
 COPY tools/nginx.sh .
 
-RUN chmod +x ./tools/nginx.sh
+RUN chmod +x nginx.sh
 
-CMD ["./tools/nginx.sh"]
+
+#CMD ["./tools/nginx.sh"]
+CMD ["tail", "-f"]

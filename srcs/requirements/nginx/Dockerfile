@@ -8,5 +8,4 @@ COPY tools/nginx.sh .
 RUN chmod +x nginx.sh
 
 
-#CMD ["./tools/nginx.sh"]
-CMD ["tail", "-f"]
+CMD ["nginx", "-g", "daemon off;"]

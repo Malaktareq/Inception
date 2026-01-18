@@ -1,11 +1,11 @@
 From debian:bookworm-slim
 
 RUN apt update -y \
-    && apt install nginx -y
+    && apt install nginx -y \
+    && apt install openssl -y
 
-COPY tools/nginx.sh .
+COPY  conf/default.conf /etc/nginx/conf.d
+RUN rm -f /etc/nginx/sites-enabled/default
 
-RUN chmod +x nginx.sh
-
-
-CMD ["nginx", "-g", "daemon off;"]
+#CMD ["nginx","-g","daemon off;"]
+CMD ["tail", "-f"]

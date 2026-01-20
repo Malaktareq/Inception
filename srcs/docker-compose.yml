@@ -16,7 +16,8 @@ services:
     networks:
       network_1:
         ipv4_address: 192.168.91.3
-
+    secrets:
+      - db_password
   wordpress:
     build: ./requirements/wordpress/
     container_name: wordpress
@@ -36,6 +37,8 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
+    secrets:
+      - wp_password
 
   nginx:
     build: ./requirements/nginx/
@@ -49,7 +52,7 @@ services:
       wordpress:
         condition: service_healthy
     ports: 
-      - "4000:80"
+      - "443:443"
     networks:
       network_1:
          ipv4_address: 192.168.91.4
@@ -65,7 +68,8 @@ volumes:
     driver_opts:
       type: none
       device: /home/malsharq/data/wp
-      o: bind    
+      o: bind 
+
 networks:
   network_1:
     driver: bridge
@@ -73,5 +77,10 @@ networks:
       config:
         - subnet: "192.168.91.0/24"
 
+secrets:
+  db_password:
+    file: ../secret/db_password.txt
+  wp_password:
+    file: ../secret/wp_password.txt
 
     

@@ -4,10 +4,8 @@ volumes:
 	mkdir -p ~/data
 	mkdir -p ~/data/wp ~/data/db
 
-
 run :
-	cd srcs && docker compose up -d
-
+	cd srcs && docker compose up -d --build
 clean :
 	cd srcs && docker compose down -v
 fclean : clean

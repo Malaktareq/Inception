@@ -2,13 +2,14 @@ services:
   mariadb:
     build: ./requirements/mariadb/
     container_name: mariadb
+    image: mariadb
     restart: always
     volumes:
       - mariadb_vol:/var/lib/mysql
     env_file:
       - .env
     healthcheck:
-      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-u", "root", "-p$(cat /run/secrets/db_root_password)"]
+      test: ["CMD-SHELL", "mariadb-admin ping -h localhost -u $DB_USER -p$(cat /run/secrets/db_password)"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -23,6 +24,7 @@ services:
   wordpress:
     build: ./requirements/wordpress/
     container_name: wordpress
+    image: wordpress
     restart: always
     volumes: 
       - wordpress_vol:/var/www/html
@@ -42,10 +44,11 @@ services:
     secrets:
       - wp_admin_password
       - db_password
-
+      - wp_user_password
   nginx:
     build: ./requirements/nginx/
     container_name: nginx
+    image: nginx
     restart: always
     volumes:
       - wordpress_vol:/var/www/html
@@ -87,5 +90,6 @@ secrets:
     file: ../secrets/db_root_password.txt
   wp_admin_password:
     file: ../secrets/wp_admin_password.txt
-
+  wp_user_password:
+    file: ../secrets/wp_user_password.txt
     

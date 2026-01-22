@@ -246,7 +246,6 @@ This keeps the abstraction of **named volumes**, but guarantees the host storage
 - **Classic bind mount (not used here):** mounts a host folder directly in a service definition (high host dependency).
 - **Our approach:** uses **named volumes**, but binds the backing storage directory to a fixed host path using `driver_opts`.
 
----
 
 --------------------------------------------------------------------------------
 ## 🤖 AI Usage

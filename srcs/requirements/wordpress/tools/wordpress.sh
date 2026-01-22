@@ -27,8 +27,12 @@ if ! wp --path="$WP_DIR" core is-installed --allow-root; then
     --admin_email="$WP_ADMIN_EMAIL" \
     --skip-email \
     --allow-root
- 
-wp user create $WP_USER $WP_USER_EMAIL --role=author --user_pass=$WP_USER_PASSWORD --path=$WP_DIR --allow-root 
+
+wp user create "$WP_USER_NAME" "$WP_USER_EMAIL" \
+  --path="$WP_DIR" \
+  --role=author \
+  --user_pass="$WP_USER_PASSWORD" \
+  --allow-root
 
 fi
     sed -i "s|listen = /run/php/php8.2-fpm.sock|listen = 9000|" "/etc/php/8.2/fpm/pool.d/www.conf" 

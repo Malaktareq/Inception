@@ -249,12 +249,71 @@ This keeps the abstraction of **named volumes**, but guarantees the host storage
 ---
 
 --------------------------------------------------------------------------------
-📚 Resources & AI Usage
-References
-• Docker Documentation
-• NGINX Documentation
-• MariaDB - Installing and Using
-• Docker Networking Guide
+## 🤖 AI Usage
+
+Per the subject instructions, the use of AI is documented below.
+
+### ✅ What AI was used for
+AI tools were used to support learning, reduce repetitive work, and troubleshoot issues during development, including:
+- Generating/validating **regex** patterns for NGINX configuration needs.
+- Clarifying Dockerfile behavior such as **`ENTRYPOINT` vs `CMD`** and best practices around PID 1.
+- Troubleshooting **permissions and ownership issues** (especially with volumes and MariaDB initialization).
+- Debugging container startup problems (compose networking, service dependencies, environment/secrets reading).
+- Explaining concepts to ensure the project decisions were understood (networks, volumes, secrets, TLS basics).
+
+### 🧰 Tools used
+- **ChatGPT**
+- **Gemini**
+
+### 🧠 Prompting & verification strategy
+- AI was used mainly for **concept explanations** and **targeted debugging** rather than copying full solutions.
+- Any suggested configuration/code was **reviewed, edited, and tested** inside the VM environment.
+- Only changes that were fully understood and reproducible were kept in the final repository.
+---
+## 📚 Resources
+### Containers & Docker basics
+- The Enterprisers Project — *How to explain containers in plain English*  
+  https://enterprisersproject.com/article/2018/8/how-explain-containers-plain-english
+- Ankit Sahay (Medium) — *What is Docker and what problem does it solve?*  
+  https://ankitsahay.medium.com/what-is-docker-and-what-problem-does-it-solve-a019b73ff8aa
+- YouTube playlist video  
+  https://www.youtube.com/watch?v=0qotVMX-J5s&list=PLcgYNRANzNIay10MEtd77PXAkHZYs89VK&index=2
+
+### Images / registries / hub
+- Red Hat — *What is a container registry?*  
+  https://www.redhat.com/en/topics/cloud-native-apps/what-is-a-container-registry
+- Docker Hub  
+  https://hub.docker.com/
+
+### Cheat sheets & practical docs
+- DevOpsCycle — *The Ultimate Docker Cheat Sheet (PDF)*  
+  https://devopscycle.com/pdfs/the-ultimate-docker-cheat-sheet.pdf
+- Docker Docs — Compose file reference (`init`)  
+  https://docs.docker.com/reference/compose-file/#init
+
+### Secrets & security
+- Semaphore — *Docker secrets management*  
+  https://semaphore.io/blog/docker-secrets-management
+
+### Database concepts (MariaDB)
+- MariaDB Docs — *ACID & concurrency control with transactions*  
+  https://mariadb.com/docs/general-resources/database-theory/acid-concurrency-control-with-transactions
+
+### TLS / OpenSSL
+- Baeldung — *OpenSSL Self-Signed Certificate*  
+  https://www.baeldung.com/openssl-self-signed-cert
+- F5 Glossary — *OpenSSL*  
+  https://www.f5.com/glossary/openssl
+- YouTube video (OpenSSL / certificates)  
+  https://www.youtube.com/watch?v=T4Df5_cojAs
+
+### NGINX & WordPress tooling
+- NGINX docs — `location` directive (core module)  
+  https://nginx.org/en/docs/http/ngx_http_core_module.html#location
+- WordPress Developer Docs — WP-CLI commands  
+  https://developer.wordpress.org/cli/commands/
+
+
 AI Usage
 Per the subject instructions, the use of AI is documented below:
 • Tasks:

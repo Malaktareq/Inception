@@ -143,7 +143,6 @@ This project clearly separates **general configuration** from **confidential cre
 | **Rotation** | Usually requires editing `.env` and restarting services. | Can be rotated by replacing secret files and restarting without rebuilding images. |
 
 ---
-
 ### 🛡️ Security Implementation Details
 
 This project follows a strict **“No Passwords in Git”** policy to mimic real-world DevOps security practices.
@@ -162,27 +161,51 @@ This project follows a strict **“No Passwords in Git”** policy to mimic real
   3. Services (MariaDB / WordPress scripts) read passwords from the file path instead of environment variables.
 
 ---
+## 3) Docker Network vs. Host Network (Isolation & Security)
 
-### 🔒 Security Workflow
+Networking is the backbone of this infrastructure.  
+To ensure service isolation and avoid exposing backend services, this project **does not allow direct host networking** for containers.
 
-```mermaid
-graph LR
-    User[👤 You (Administrator)] -->|Creates| SecretFiles[📄 secrets/*.txt]
+---
 
-    subgraph Host_VM [Host VM]
-        SecretFiles
-        EnvFile[📄 .env (Config Only)]
-    end
+### 🌐 Technical Comparison
 
-    subgraph Container [🐳 Container]
-        MountPoint[📂 /run/secrets/db_pass]
-        App[⚙️ Application]
-    end
+| Feature | Host Network (`network: host`) | Docker Bridge Network |
+|---|---|---|
+| **IP address** | Container shares the host IP address. | Container receives its own internal IP on a virtual bridge. |
+| **Port exposure** | All container ports are effectively exposed on the host. | Ports are closed by default and must be explicitly published. |
+| **Service discovery** | Harder to manage (localhost conflicts). | Built-in DNS: containers resolve each other by service name (e.g., `mariadb`). |
+| **Subject status** | ❌ Forbidden (breaks isolation). | ✅ Mandatory (isolates services). |
 
-    SecretFiles -.->|Mounted as Read-Only| MountPoint
-    EnvFile -.->|Loaded as Env Vars| App
-    MountPoint -->|Reads Password| App
-```
+---
+
+### 🏰 The Architecture (Security Guard Model)
+
+This project uses a **custom internal Docker network** to mimic a real-world DMZ-style setup:
+
+1. **Forbidden methods**  
+   The following are strictly banned because they weaken isolation:
+   - `network: host`
+   - `links:`
+   - `--link`
+
+2. **The “Security Guard” (NGINX)**  
+   - NGINX is the **only** container exposed to the host.
+   - It listens on **port 443 (HTTPS)** and acts as the single entry point.
+
+3. **The protected backend**  
+   - WordPress (PHP-FPM) and MariaDB run inside the isolated network:
+     - WordPress/PHP-FPM (internal port typically **9000**)
+     - MariaDB (internal port typically **3306**)
+   - They are **not accessible directly from the host**.
+   - NGINX forwards requests to WordPress, and WordPress connects to MariaDB using Docker’s internal DNS (`mariadb` service name).
+
+---
+
+### 🧩 Communication Flow
+- **Host → NGINX** (HTTPS :443)
+- **NGINX → WordPress** (internal Docker network)
+- **WordPress → MariaDB** (internal Docker network via service name)
 --------------------------------------------------------------------------------
 📚 Resources & AI Usage
 References

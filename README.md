@@ -1,17 +1,11 @@
 *This project has been created as part of the 42 curriculum by malsharq.*
+
+# Inception (42) — Docker Infrastructure inside a VM
+
 ## 📖 Description
-Inception is a System Administration project that aims to broaden knowledge of system administration by using Docker. The goal is to virtualize several Docker images to create a small, functional web infrastructure entirely inside a Virtual Machine
-.
-Unlike standard Docker usage where ready-made images are pulled, this project requires designing a custom infrastructure from scratch. We build our own Dockerfiles for NGINX, WordPress, and MariaDB, ensuring a deep understanding of service isolation, networking, and volume management
-,
-.
-The Architecture:
-• NGINX: The only entry point (TLSv1.2/1.3, Port 443)
-.
-• WordPress + PHP-FPM: The application logic, isolated from the outside world
-.
-• MariaDB: The database, accessible only by WordPress
-.
+Inception is a System Administration exercise that aims to broaden knowledge of system administration by using **Docker**. The project must be done inside a **Virtual Machine**, where you virtualize several Docker images and build a small web infrastructure using **docker compose**. :contentReference[oaicite:0]{index=0}
+
+You must create your own images (one Dockerfile per service) and orchestrate them with a `docker-compose.yml` called by a **Makefile at the repository root**. Pulling ready-made images from DockerHub is forbidden (except the base Alpine/Debian). :contentReference[oaicite:1]{index=1}
 
 --------------------------------------------------------------------------------
 🛠️ Instructions

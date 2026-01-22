@@ -47,7 +47,7 @@ Execute the Makefile. This will build the images, automatically create the requi
 - Website: `https://<login>.42.fr`
 - WordPress admin: `https://<login>.42.fr/wp-admin`
 
---------------------------------------------------------------------------------
+---
 ## 🏗️ Project Description & Design Choices
 ### The project's folder hierarchy
 This project uses Docker to containerize each service (NGINX, WordPress/PHP-FPM, MariaDB) in its own isolated environment. Docker Compose coordinates the containers by creating a dedicated network for internal communication, defining persistent volumes for WordPress files and MariaDB data, and controlling startup order and restart behavior. Only NGINX is exposed to the host on port 443; WordPress and MariaDB remain accessible only inside the Docker network.
@@ -90,30 +90,80 @@ This repository includes all the files required to build and run the infrastruct
 In short: **NGINX is configured using config files**, while **MariaDB and WordPress are configured primarily through startup scripts** located in `tools/`.
 
 .
-### 
-Below is a comparison of the key technical concepts implemented in this infrastructure:
+
+---
+## Design Choices
 1. Virtual Machines vs. Docker
-• Virtual Machines (VMs): Emulate entire hardware systems. Each VM runs a full Operating System (kernel + user space), making them heavy and resource-intensive.
-• Docker (Containers): Virtualize the OS kernel. Containers are lightweight processes that share the host's kernel but maintain isolated user spaces (filesystems, PID namespaces).
-• Choice: We run Docker inside a VM to practice strict system administration and isolation, ensuring the host machine remains unaffected by the project environment
+This project utilizes a nested architecture: Docker containers running inside a Virtual Machine. To understand this design, it is crucial to distinguish between the two technologies.
+⚔️ Technical Comparison
+Feature
+	
+Virtual Machine (VM)
+	
+Docker Container
+Abstraction
+	
+Hardware Virtualization. Emulates a full physical computer (CPU, RAM, Disk)
+.
+	
+OS Virtualization. Isolates processes within the user space
+.
+Operating System
+	
+Runs a complete, independent Guest OS (Kernel + User Space)
+.
+	
+Shares the Host OS Kernel; strictly isolates the User Space (filesystems, PID)
+.
+Isolation
+	
+Strong. Complete isolation resembling a separate physical machine
+.
+	
+Lightweight. Process-level isolation using Linux Namespaces and Cgroups.
+Performance
+	
+Heavy. Resource-intensive (GBs of RAM) and slower to boot
+.
+	
+Fast. Lightweight (MBs of RAM) and starts instantly
+.
+🏗️ Why use both? (The Inception Architecture)
+While Docker is designed to run directly on a host for performance, this project strictly requires running Docker inside a VM
+. This choice is deliberate for the following reasons:
+1. Strict Isolation: It ensures the project environment is completely separated from your physical machine. If the infrastructure breaks, your personal host remains unaffected
 ,
 .
-2. Secrets vs. Environment Variables
-• Environment Variables: Stored in .env files and passed to containers. While convenient, they can be insecure if inspecting the container via docker inspect reveals values in plain text.
-• Docker Secrets: Encrypted at rest and mounted as files inside the container (usually in /run/secrets/). They are only accessible to services explicitly granted access.
-• Choice: While .env files are mandatory for configuration variables
-, this project strongly recommends/implements secrets for sensitive credentials (like DB passwords) to adhere to DevOps security best practices,
+2. System Administration Practice: It simulates a real-world scenario where you manage a remote server (the VM) rather than your local machine, forcing you to handle permissions and configurations correctly
 .
-3. Docker Network vs. Host Network
-• Host Network: The container shares the host's networking namespace. Use of network: host is strictly forbidden in this project
+3. The "Inception" Concept: The project mimics systems within systems—processes (containers) running inside a virtualized system (VM), which runs on physical hardware
 .
-• Docker Network: Creates a virtual bridge network. Containers can communicate securely via service names (DNS resolution) without exposing internal ports (like 3306 or 9000) to the outside world.
-• Choice: A custom bridge network is established. Only NGINX exposes port 443 to the host; all other traffic (WordPress <-> MariaDB) remains internal to the docker network
-.
-4. Docker Volumes vs. Bind Mounts
-• Bind Mounts: Map a specific file/directory on the host directly to the container. They depend heavily on the host's filesystem structure and permissions.
-• Docker Volumes: Managed completely by Docker (usually stored in /var/lib/docker/volumes). They are safer, portable, and easier to back up.
-• Choice: We use Named Volumes with a custom driver option to store data in /home/<login>/data. This satisfies the requirement for persistence on the host while utilizing Docker's volume management commands rather than crude bind mounts
+Infrastructure Hierarchy:
+
+graph TD
+    %% Nodes
+    Host[🖥️ Physical Computer (Host)]
+    VM[💻 Virtual Machine (Debian/Alpine)]
+    Docker[🐳 Docker Engine]
+    
+    %% Containers
+    subgraph User_Space [Isolated User Space]
+        NGINX[nginx]
+        WP[wordpress + php-fpm]
+        DB[mariadb]
+    end
+
+    %% Connections
+    Host --> |Virtualization| VM
+    VM --> |Runs| Docker
+    Docker --> |Manages| NGINX
+    Docker --> |Manages| WP
+    Docker --> |Manages| DB
+    
+    %% Networking
+    NGINX <--> |Docker Network| WP
+    WP <--> |Docker Network| DB
+
 ,
 .
 

@@ -15,13 +15,13 @@ I built custom images for each service using dedicated Dockerfiles (NGINX, WordP
 • Permissions: Root or sudo privileges to run Docker
 .
 ### Installation & Usage
-#### Clone the repo:
-#### Set up Secrets (Mandatory)
+#### 1.Clone the repo
+#### 2.Set up Secrets (Mandatory)
 The secrets/ directory is already present in the repository. You must manually create the password files inside it. Note: These specific text files are configured to be ignored by Git to prevent credential leaks
 ,
 .
-#### Domain Setup 
-    Map the project domain to your local IP address in /etc/hosts
+#### 3.Domain Setup 
+Map the project domain to your local IP address in /etc/hosts
 ```bash
 sudo nano /etc/hosts
 ```
@@ -35,7 +35,7 @@ Example:
 ```
 127.0.1.1  malsharq.42.fr
 ```
-#### Build & run
+#### 4.Build & run
 Execute the Makefile. This will build the images, automatically create the required data volumes on the host and start the containers.
 #### 🌐 Access
 - Website: `https://<login>.42.fr`

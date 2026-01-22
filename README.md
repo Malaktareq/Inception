@@ -4,30 +4,42 @@
 
 ## 📖 Description
 Inception is a Docker-based system administration project where I built a small web infrastructure using Docker Compose. The stack runs inside a VM as required by 42, but it can also run directly on the host.
+
 I built custom images for each service using dedicated Dockerfiles (NGINX, WordPress/PHP-FPM, MariaDB) and orchestrated them with a docker-compose.yml executed via a Makefile from the repository root. Images are built from minimal base distributions (Alpine/Debian) and no pre-made service images are used.
 
 --------------------------------------------------------------------------------
-🛠️ Instructions
-Prerequisites
-• This project is designed to run inside a Virtual Machine
+## 🛠️ Instructions
+### Prerequisites
+• Tools: Docker Engine, Docker Compose, Make
 .
-• Docker Engine and Docker Compose must be installed
+• Permissions: Root or sudo privileges to run Docker
 .
-• make utility.
-Installation & Configuration
-1. Clone the repository:
-2. Environment Setup: Create a .env file in srcs/ based on the template. Do not commit your actual passwords to Git
+### Installation & Usage
+#### Clone the repo:
+#### Set up Secrets (Mandatory)
+The secrets/ directory is already present in the repository. You must manually create the password files inside it. Note: These specific text files are configured to be ignored by Git to prevent credential leaks
+,
 .
-3. Host Data Volumes: The project requires persistent data stored on the host VM at a specific location. Ensure these directories exist (or the Makefile should create them):
-4. (Note: Replace <YOUR_USER> with your VM username as per the subject requirements
-.)
-5. Domain Setup: Map the domain to your local IP in /etc/hosts:
-Execution
-• Build and Start: Run the following command from the root directory:
-• This command uses docker-compose.yml located in srcs/ to build images and start the containers
-.
-• Stop services:
-• View Logs:
+#### Domain Setup 
+    Map the project domain to your local IP address in /etc/hosts
+```bash
+sudo nano /etc/hosts
+```
+
+Add:
+```
+<VM_IP>  <login>.42.fr
+```
+
+Example:
+```
+127.0.1.1  malsharq.42.fr
+```
+#### Build & run
+Execute the Makefile. This will build the images, automatically create the required data volumes on the host and start the containers.
+#### 🌐 Access
+- Website: `https://<login>.42.fr`
+- WordPress admin: `https://<login>.42.fr/wp-admin`
 
 --------------------------------------------------------------------------------
 🏗️ Project Description & Design Choices

@@ -93,59 +93,49 @@ In short: **NGINX is configured using config files**, while **MariaDB and WordPr
 
 ---
 ## Design Choices
-1. Virtual Machines vs. Docker
-This project utilizes a nested architecture: Docker containers running inside a Virtual Machine. To understand this design, it is crucial to distinguish between the two technologies.
-⚔️ Technical Comparison
-Feature
-	
-Virtual Machine (VM)
-	
-Docker Container
-Abstraction
-	
-Hardware Virtualization. Emulates a full physical computer (CPU, RAM, Disk)
-.
-	
-OS Virtualization. Isolates processes within the user space
-.
-Operating System
-	
-Runs a complete, independent Guest OS (Kernel + User Space)
-.
-	
-Shares the Host OS Kernel; strictly isolates the User Space (filesystems, PID)
-.
-Isolation
-	
-Strong. Complete isolation resembling a separate physical machine
-.
-	
-Lightweight. Process-level isolation using Linux Namespaces and Cgroups.
-Performance
-	
-Heavy. Resource-intensive (GBs of RAM) and slower to boot
-.
-	
-Fast. Lightweight (MBs of RAM) and starts instantly
-.
-🏗️ Why use both? (The Inception Architecture)
-While Docker is designed to run directly on a host for performance, this project strictly requires running Docker inside a VM
-. This choice is deliberate for the following reasons:
-1. Strict Isolation: It ensures the project environment is completely separated from your physical machine. If the infrastructure breaks, your personal host remains unaffected
-,
-.
-2. System Administration Practice: It simulates a real-world scenario where you manage a remote server (the VM) rather than your local machine, forcing you to handle permissions and configurations correctly
-.
-3. The "Inception" Concept: The project mimics systems within systems—processes (containers) running inside a virtualized system (VM), which runs on physical hardware
-.
-Infrastructure Hierarchy:
+## 1) Virtual Machines vs. Docker (Why both?)
 
+This project uses a **nested architecture**: **Docker containers running inside a Virtual Machine (VM)**.  
+For the official **42 Inception** requirements, running inside a **VM is mandatory**.  
+However, this repository can also run **perfectly on a host machine** (if Docker + Docker Compose are installed).
+
+---
+
+### ⚔️ Technical Comparison
+
+| Feature | Virtual Machine (VM) | Docker Container |
+|---|---|---|
+| **Abstraction** | Hardware virtualization — emulates a full computer (CPU, RAM, disk). | OS virtualization — isolates processes in user space. |
+| **Operating System** | Runs a complete guest OS (kernel + user space). | Shares the host kernel; isolates user space (filesystem, PID, etc.). |
+| **Isolation** | Strong isolation (like a separate physical machine). | Lightweight isolation using **namespaces** and **cgroups**. |
+| **Performance** | Heavier (more resources, slower boot). | Faster (lightweight, starts quickly). |
+
+---
+
+### 🏗️ Why use both? (The Inception Architecture)
+
+Even though Docker can run directly on a host, the 42 project deliberately requires Docker inside a VM:
+
+1. **Strict Isolation**  
+   The project environment is fully separated from your physical machine. If something breaks, your host stays safe.
+
+2. **System Administration Practice**  
+   It simulates managing a remote server (the VM) instead of your local machine, forcing correct handling of permissions and configuration.
+
+3. **The “Inception” Concept**  
+   Systems within systems: containers (process-level virtualization) running inside a VM (hardware-level virtualization) on physical hardware.
+
+---
+
+### 🧩 Infrastructure Hierarchy
+
+```mermaid
 graph TD
     %% Nodes
     Host[🖥️ Physical Computer (Host)]
     VM[💻 Virtual Machine (Debian/Alpine)]
     Docker[🐳 Docker Engine]
-    
+
     %% Containers
     subgraph User_Space [Isolated User Space]
         NGINX[nginx]
@@ -159,13 +149,11 @@ graph TD
     Docker --> |Manages| NGINX
     Docker --> |Manages| WP
     Docker --> |Manages| DB
-    
+
     %% Networking
     NGINX <--> |Docker Network| WP
     WP <--> |Docker Network| DB
-
-,
-.
+```
 
 --------------------------------------------------------------------------------
 📚 Resources & AI Usage

@@ -126,35 +126,63 @@ Even though Docker can run directly on a host, the 42 project deliberately requi
    Systems within systems: containers (process-level virtualization) running inside a VM (hardware-level virtualization) on physical hardware.
 
 ---
+## 2) Secrets vs. Environment Variables (Security)
 
-### 🧩 Infrastructure Hierarchy
+Managing sensitive data is a critical part of system administration.  
+This project clearly separates **general configuration** from **confidential credentials**.
+
+---
+
+### 🔑 Technical Comparison
+
+| Feature | Environment Variables (`.env`) | Docker Secrets |
+|---|---|---|
+| **Storage location** | Plain text values loaded into the container environment. | Stored as files and mounted into the container filesystem (e.g., `/run/secrets/...`). |
+| **Visibility** | Less secure — values may be exposed via container inspection tools. | More secure — provided only to permitted services as read-only files. |
+| **Best use** | Non-sensitive config (domains, usernames, paths). | Sensitive data (passwords, API keys, certificates). |
+| **Rotation** | Usually requires editing `.env` and restarting services. | Can be rotated by replacing secret files and restarting without rebuilding images. |
+
+---
+
+### 🛡️ Security Implementation Details
+
+This project follows a strict **“No Passwords in Git”** policy to mimic real-world DevOps security practices.
+
+#### 1) Environment Variables (`.env`)
+- Used for **public configuration**, such as `DOMAIN_NAME` or `MYSQL_DATABASE`.
+- Automatically loaded by Docker Compose from `srcs/.env`.
+- Note: while the subject mandates a `.env` file, **storing passwords inside it is discouraged** because secrets can leak easily.
+
+#### 2) Docker Secrets (Recommended Security Standard)
+- **Rule:** any credentials/passwords committed to the repository can lead to project failure.
+- **Solution:** sensitive values are injected at runtime using secrets files.
+- **Mechanism:**
+  1. Create secret files on the host in `secrets/` (example: `db_password.txt`).
+  2. Docker mounts them into containers under `/run/secrets/` as **read-only**.
+  3. Services (MariaDB / WordPress scripts) read passwords from the file path instead of environment variables.
+
+---
+
+### 🔒 Security Workflow
 
 ```mermaid
-graph TD
-    %% Nodes
-    Host[🖥️ Physical Computer (Host)]
-    VM[💻 Virtual Machine (Debian/Alpine)]
-    Docker[🐳 Docker Engine]
+graph LR
+    User[👤 You (Administrator)] -->|Creates| SecretFiles[📄 secrets/*.txt]
 
-    %% Containers
-    subgraph User_Space [Isolated User Space]
-        NGINX[nginx]
-        WP[wordpress + php-fpm]
-        DB[mariadb]
+    subgraph Host_VM [Host VM]
+        SecretFiles
+        EnvFile[📄 .env (Config Only)]
     end
 
-    %% Connections
-    Host --> |Virtualization| VM
-    VM --> |Runs| Docker
-    Docker --> |Manages| NGINX
-    Docker --> |Manages| WP
-    Docker --> |Manages| DB
+    subgraph Container [🐳 Container]
+        MountPoint[📂 /run/secrets/db_pass]
+        App[⚙️ Application]
+    end
 
-    %% Networking
-    NGINX <--> |Docker Network| WP
-    WP <--> |Docker Network| DB
+    SecretFiles -.->|Mounted as Read-Only| MountPoint
+    EnvFile -.->|Loaded as Env Vars| App
+    MountPoint -->|Reads Password| App
 ```
-
 --------------------------------------------------------------------------------
 📚 Resources & AI Usage
 References

@@ -314,12 +314,3 @@ AI tools were used to support learning, reduce repetitive work, and troubleshoot
   https://developer.wordpress.org/cli/commands/
 
 
-AI Usage
-Per the subject instructions, the use of AI is documented below:
-• Tasks:
-    ◦ Example: Generating regex for NGINX configuration files.
-    ◦ Example: Clarifying the difference between ENTRYPOINT and CMD in Dockerfiles.
-    ◦ Example: Troubleshooting permissions issues with the MariaDB startup script.
-• Tools Used: ChatGPT / Copilot / DeepSeek.
-• Prompting Strategy: AI was used to explain concepts (like PID 1 management) and debug specific errors. All code generated was reviewed and tested to ensure understanding of the underlying logic
-,.

@@ -1,11 +1,10 @@
 *This project has been created as part of the 42 curriculum by malsharq.*
 
-# Inception (42) — Docker Infrastructure inside a VM
+# Inception (42) — Docker Infrastructure
 
 ## 📖 Description
-Inception is a System Administration exercise that aims to broaden knowledge of system administration by using **Docker**. The project must be done inside a **Virtual Machine**, where you virtualize several Docker images and build a small web infrastructure using **docker compose**. :contentReference[oaicite:0]{index=0}
-
-You must create your own images (one Dockerfile per service) and orchestrate them with a `docker-compose.yml` called by a **Makefile at the repository root**. Pulling ready-made images from DockerHub is forbidden (except the base Alpine/Debian). :contentReference[oaicite:1]{index=1}
+Inception is a Docker-based system administration project where I built a small web infrastructure using Docker Compose. The stack runs inside a VM as required by 42, but it can also run directly on the host.
+I built custom images for each service using dedicated Dockerfiles (NGINX, WordPress/PHP-FPM, MariaDB) and orchestrated them with a docker-compose.yml executed via a Makefile from the repository root. Images are built from minimal base distributions (Alpine/Debian) and no pre-made service images are used.
 
 --------------------------------------------------------------------------------
 🛠️ Instructions

@@ -2,7 +2,7 @@
 set -e
 DB_PASSWORD=$(cat /run/secrets/db_password)
 WP_ADMIN_PASSWORD=$(cat /run/secrets/wp_admin_password)
-
+WP_USER_PASSWORD=$(cat /run/secrets/wp_user_password)
 mkdir -p "$WP_DIR"
 
 if [ ! -f "$WP_DIR/wp-config.php" ]; then
@@ -27,8 +27,9 @@ if ! wp --path="$WP_DIR" core is-installed --allow-root; then
     --admin_email="$WP_ADMIN_EMAIL" \
     --skip-email \
     --allow-root
-    
-    rm -rf /tmp/wordpress.tar.gz /tmp/wordpress
+ 
+wp user create $WP_USER $WP_USER_EMAIL --role=author --user_pass=$WP_USER_PASSWORD --path=$WP_DIR --allow-root 
+
 fi
     sed -i "s|listen = /run/php/php8.2-fpm.sock|listen = 9000|" "/etc/php/8.2/fpm/pool.d/www.conf" 
 

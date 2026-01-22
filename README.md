@@ -206,6 +206,48 @@ This project uses a **custom internal Docker network** to mimic a real-world DMZ
 - **Host → NGINX** (HTTPS :443)
 - **NGINX → WordPress** (internal Docker network)
 - **WordPress → MariaDB** (internal Docker network via service name)
+---
+## 4) Docker Volumes vs Bind Mounts (Persistence)
+
+Data persistence is required for both the database and the WordPress website files.  
+To achieve this, the project uses **named Docker volumes** (as required by the subject), while also ensuring the data is stored under the required host path: `/home/<login>/data`.
+
+---
+
+### 📦 What is persisted?
+- **MariaDB volume** → database files (tables, users, data)
+- **WordPress volume** → website files (uploads, plugins, themes, wp-content)
+
+---
+
+### 📊 Technical Comparison
+
+| Feature | Classic Bind Mount (service-level) | Named Volume (Docker-managed) | **Named Volume + `driver_opts` (this project)** |
+|---|---|---|---|
+| **Defined where** | Inside a service (`services: ... volumes:`) | Under top-level `volumes:` | Under top-level `volumes:` |
+| **Host path dependency** | Strong (hard-coded host paths in service) | None (Docker chooses storage path) | Controlled (fixed path required by subject) |
+| **Portability** | Lower (depends on host FS structure) | Higher | Medium (path fixed by requirement) |
+| **Management** | Manual (host dir ownership/cleanup) | Easy (`docker volume ls/rm/inspect`) | Easy (`docker volume ...`) |
+| **Subject intent** | Often discouraged for required storages | ✅ Required concept | ✅ Best match for “named volumes + required path” |
+
+---
+
+### ✅ How persistence is implemented (what we do)
+Instead of using direct service bind mounts, we define **named volumes** and configure them with `driver_opts` so Docker stores their data under the subject-required directory:
+
+- `/home/<login>/data/db`
+- `/home/<login>/data/wp`
+
+This keeps the abstraction of **named volumes**, but guarantees the host storage location matches the 42 requirement (`/home/<login>/data`).
+
+---
+
+### 🔍 Difference from classic bind mounts
+- **Classic bind mount (not used here):** mounts a host folder directly in a service definition (high host dependency).
+- **Our approach:** uses **named volumes**, but binds the backing storage directory to a fixed host path using `driver_opts`.
+
+---
+
 --------------------------------------------------------------------------------
 📚 Resources & AI Usage
 References
